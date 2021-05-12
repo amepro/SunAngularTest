@@ -1,0 +1,258 @@
+<div class="container">
+  <div class="border">
+    <button class="btn btn-md btn-outline-primary" (click)="initForm(content)" title="Ajouter">
+      <i class="fa fa-plus"></i></button>
+  </div>
+  <table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Prénom</th>
+      <th>Email</th>
+      <th>Téléphone</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let ut of utilisateurs;let i=index">
+      <td><span>{{ut.nom}}</span></td>
+      <td><span>{{ut.prenom}}</span></td>
+      <td><span>{{ut.telephone}}</span></td>
+      <td><span>{{ut.email}}</span></td>
+      <td>
+        <button class="btn btn-sm btn-info" (click)="openDetails(contentDetails, ut)" title="Détail">
+          <i class="fa fa-search" ></i></button>
+          <button class="btn btn-sm btn-warning" (click)="updateForm(ut,i,content)" title="Modifier">
+            <i class="fa fa-edit"></i></button>
+            <button class="btn btn-sm btn-danger" (click)="deleteUtilisateur(ut)" title="Supprimer">
+              <i class="fa fa-remove"></i></button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title" *ngIf="!isUpdate">Ajouter un utilisateur</h4>
+    <h4 class="modal-title" id="modal-basic-title" *ngIf="isUpdate">Modifier</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <div class="row">
+          <div class="col-md-6 form-group">
+            <label for="nom">Nom</label>
+            <div class="input-group">
+              <input id="nom" name="nom" class="form-control" formControlName="nom" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('nom').dirty || loginForm.get('nom').touched) && loginForm.get('nom').errors?.required}">
+              <div *ngIf="loginForm.get('nom').errors" class="invalid-feedback">
+                <div *ngIf="(submitted || loginForm.get('nom').dirty || loginForm.get('nom').touched) && loginForm.get('nom').errors?.required">le nom est obligatoire</div>
+              </div>
+
+           </div>
+          </div>
+          <div class="col-md-6 form-group">
+            <label for="prenom">Prénom</label>
+            <div class="input-group">
+              <input id="prenom" name="prenom" class="form-control" formControlName="prenom" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('prenom').dirty || loginForm.get('prenom').touched) && loginForm.get('prenom').errors?.required}">
+              <div *ngIf="loginForm.get('prenom').errors" class="invalid-feedback">
+                <div *ngIf="(submitted || loginForm.get('prenom').dirty || loginForm.get('prenom').touched) && loginForm.get('prenom').errors?.required">le prénom est obligatoire</div>
+              </div>
+            </div>
+          </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label for="telephone">Téléphone</label>
+          <div class="input-group">
+            <input id="telephone" name="telephone" class="form-control" formControlName="telephone" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('telephone').dirty || loginForm.get('telephone').touched) && loginForm.get('telephone').errors?.required}">
+            <div *ngIf="loginForm.get('telephone').errors" class="invalid-feedback">
+              <div *ngIf="(submitted || loginForm.get('telephone').dirty || loginForm.get('telephone').touched) && loginForm.get('telephone').errors?.required">le téléphone est obligatoire</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 form-group">
+          <label for="email">Email</label>
+          <div class="input-group">
+            <input id="email" name="email" class="form-control" formControlName="email" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('email').dirty || loginForm.get('email').touched) && loginForm.get('email').errors?.required}">
+            <div *ngIf="loginForm.get('email').errors" class="invalid-feedback">
+              <div *ngIf="(submitted || loginForm.get('email').dirty || loginForm.get('email').touched) && loginForm.get('email').errors?.required">l'email est obligatoire</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label for="piece">Type de Piéce</label>
+          <select class="form-control" name="piece"  formControlName="piece" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('piece').dirty || loginForm.get('piece').touched) && loginForm.get('piece').errors?.required}">
+            <option value="" disabled>Choisir Le type de piéce</option>
+            <option *ngFor="let pe of tabPiece" value="{{pe.value}}">{{ pe.name }}</option>
+        </select>
+        <div *ngIf="loginForm.get('piece').errors" class="invalid-feedback">
+          <div *ngIf="(submitted || loginForm.get('piece').dirty || loginForm.get('piece').touched) && loginForm.get('piece').errors?.required">le type de piéce est obligatoire</div>
+        </div>
+        </div>
+        <div class="col-md-6 form-group">
+          <label for="numeropiece">Numero Piéce</label>
+          <div class="input-group">
+            <input id="numeropiece" name="numeropiece" class="form-control" formControlName="numeropiece" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('numeropiece').dirty || loginForm.get('numeropiece').touched) && loginForm.get('numeropiece').errors?.required}">
+            <div *ngIf="loginForm.get('numeropiece').errors" class="invalid-feedback">
+              <div *ngIf="(submitted || loginForm.get('numeropiece').dirty || loginForm.get('numeropiece').touched) && loginForm.get('numeropiece').errors?.required">le numéro de piéce est obligatoire</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label for="paysNais">Pays de Naissance</label>
+          <select class="form-control" name="paysNais"  formControlName="paysNais" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('paysNais').dirty || loginForm.get('paysNais').touched) && loginForm.get('paysNais').errors?.required}">
+            <option *ngFor="let pn of tabNais" value="{{pn.value}}">{{ pn.name }}</option>
+        </select>
+        <div *ngIf="loginForm.get('paysNais').errors" class="invalid-feedback">
+          <div *ngIf="(submitted || loginForm.get('paysNais').dirty || loginForm.get('paysNais').touched) && loginForm.get('paysNais').errors?.required">le pays de naissance est obligatoire</div>
+        </div>
+        </div>
+        <div class="col-md-6 form-group">
+          <label for="sexe">Sexe</label>
+          <select class="form-control" name="sexe"  formControlName="sexe" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('sexe').dirty || loginForm.get('sexe').touched) && loginForm.get('sexe').errors?.required}">
+            <option *ngFor="let ps of tabSexe" value="{{ps.value}}">{{ ps.name }}</option>
+        </select>
+        <div *ngIf="loginForm.get('sexe').errors" class="invalid-feedback">
+          <div *ngIf="(submitted || loginForm.get('sexe').dirty || loginForm.get('sexe').touched) && loginForm.get('sexe').errors?.required">le sexe est obligatoire</div>
+        </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label for="datenais">Date de Naissance</label>
+          <div class="input-group">
+            <input type="date" id="datenais" name="datenais" class="form-control" formControlName="datenais" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('datenais').dirty || loginForm.get('datenais').touched) && loginForm.get('datenais').errors.required}">
+            <div *ngIf="loginForm.get('datenais').errors" class="invalid-feedback">
+              <div *ngIf="(submitted || loginForm.get('datenais').dirty || loginForm.get('datenais').touched) && loginForm.get('datenais').errors.required">la date de naissance est obligatoire</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 form-group">
+          <label for="adresse">Adresse</label>
+          <div class="input-group">
+            <input id="adresse" name="adresse" class="form-control" formControlName="adresse" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('adresse').dirty || loginForm.get('adresse').touched) && loginForm.get('adresse').errors.required}">
+            <div *ngIf="loginForm.get('adresse').errors" class="invalid-feedback">
+              <div *ngIf="(submitted || loginForm.get('adresse').dirty || loginForm.get('adresse').touched) && loginForm.get('adresse').errors.required">la date de naissance est obligatoire</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border text-center">
+        <button data-dismiss="modal" class="btn btn-info" *ngIf="!isUpdate">Ajouter</button>
+        <button data-dismiss="modal" class="btn btn-info" *ngIf="isUpdate">Modifier</button>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Fermer</button>
+  </div>
+</ng-template>
+
+
+
+
+
+
+<ng-template #contentDetails let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title1">Details</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label for="lnom">Nom</label>
+          <div class="input-group">
+            <input id="lnom" class="form-control" readonly>
+          </div>
+        </div>
+        <div class="col-md-6  form-group">
+          <label for="prenom">Prénom</label>
+          <div class="input-group">
+            <input id="lprenom" class="form-control" readonly>
+          </div>
+        </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 form-group">
+        <label for="telephone">Téléphone</label>
+        <div class="input-group">
+          <input id="ltelephone" class="form-control" readonly>
+        </div>
+      </div>
+      <div class="col-md-6  form-group">
+        <label for="email">Email</label>
+        <div class="input-group">
+          <input id="lemail" class="form-control" readonly>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 form-group">
+        <label for="piece">Type de piéce</label>
+        <div class="input-group">
+          <input id="lpiece" class="form-control" readonly>
+        </div>
+      </div>
+      <div class="col-md-6  form-group">
+        <label for="numeropiece">Numero de piece</label>
+        <div class="input-group">
+          <input id="lnumeropiece" class="form-control" readonly>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 form-group">
+        <label for="paysNais">Pays de naissance</label>
+        <div class="input-group">
+          <input id="lpaysNais" class="form-control" readonly>
+        </div>
+      </div>
+      <div class="col-md-6  form-group">
+        <label for="sexe">Sexe</label>
+        <div class="input-group">
+          <input id="lsexe" class="form-control" readonly>
+        </div>
+      </div>
+    </div>
+
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Fermer</button>
+  </div>
+</ng-template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
