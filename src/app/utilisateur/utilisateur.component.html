@@ -8,8 +8,8 @@
     <tr>
       <th>Nom</th>
       <th>Prénom</th>
-      <th>Email</th>
       <th>Téléphone</th>
+      <th>Email</th>
       <th>Actions</th>
     </tr>
     </thead>
@@ -21,7 +21,7 @@
       <td><span>{{ut.email}}</span></td>
       <td>
         <button class="btn btn-sm btn-info" (click)="openDetails(contentDetails, ut)" title="Détail">
-          <i class="fa fa-search" ></i></button>
+          <i class="fa fa-eye" ></i></button>
           <button class="btn btn-sm btn-warning" (click)="updateForm(ut,i,content)" title="Modifier">
             <i class="fa fa-edit"></i></button>
             <button class="btn btn-sm btn-danger" (click)="deleteUtilisateur(ut)" title="Supprimer">
@@ -69,28 +69,57 @@
         <div class="col-md-6 form-group">
           <label for="telephone">Téléphone</label>
           <div class="input-group">
-            <input id="telephone" name="telephone" class="form-control" formControlName="telephone" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('telephone').dirty || loginForm.get('telephone').touched) && loginForm.get('telephone').errors?.required}">
+            <input id="telephone" name="telephone" class="form-control" formControlName="telephone" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('telephone').dirty || loginForm.get('telephone').touched) && (loginForm.get('telephone').errors?.required || loginForm.get('telephone').errors?.pattern)}">
             <div *ngIf="loginForm.get('telephone').errors" class="invalid-feedback">
               <div *ngIf="(submitted || loginForm.get('telephone').dirty || loginForm.get('telephone').touched) && loginForm.get('telephone').errors?.required">le téléphone est obligatoire</div>
+              <div *ngIf="loginForm.get('telephone').errors?.pattern">Numéro téléphone invalide</div>
             </div>
           </div>
         </div>
         <div class="col-md-6 form-group">
           <label for="email">Email</label>
           <div class="input-group">
-            <input id="email" name="email" class="form-control" formControlName="email" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('email').dirty || loginForm.get('email').touched) && loginForm.get('email').errors?.required}">
+            <input id="email" name="email" class="form-control" formControlName="email" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('email').dirty || loginForm.get('email').touched ) && (loginForm.get('email').errors?.required || loginForm.get('email').errors?.pattern)}">
             <div *ngIf="loginForm.get('email').errors" class="invalid-feedback">
-              <div *ngIf="(submitted || loginForm.get('email').dirty || loginForm.get('email').touched) && loginForm.get('email').errors?.required">l'email est obligatoire</div>
+              <div *ngIf="(submitted || loginForm.get('email').dirty || loginForm.get('email').touched ) && loginForm.get('email').errors?.required">l'email est obligatoire</div>
+              <div *ngIf="loginForm.get('email').errors?.pattern">Email invalide</div>
             </div>
           </div>
         </div>
       </div>
 
+
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label for="datenais">Date de Naissance</label>
+          <div class="input-group">
+            <input type="date" id="datenais" name="datenais" class="form-control" formControlName="datenais" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('datenais').dirty || loginForm.get('datenais').touched) && loginForm.get('datenais').errors?.required}">
+            <div *ngIf="loginForm.get('datenais').errors" class="invalid-feedback">
+              <div *ngIf="(submitted || loginForm.get('datenais').dirty || loginForm.get('datenais').touched) && loginForm.get('datenais').errors?.required">la date de naissance est obligatoire</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 form-group">
+          <label for="sexe">Sexe</label>
+          <select class="form-control" name="sexe" (change)="checkNumeroPiece()"  formControlName="sexe" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('sexe').dirty || loginForm.get('sexe').touched) && loginForm.get('sexe').errors?.required}">
+            <option value="" disabled>Choisir le sexe</option>
+            <option *ngFor="let ps of tabSexe" value="{{ps.value}}">{{ ps.name }}</option>
+          </select>
+           <div *ngIf="loginForm.get('sexe').errors" class="invalid-feedback">
+             <div *ngIf="(submitted || loginForm.get('sexe').dirty || loginForm.get('sexe').touched) && loginForm.get('sexe').errors?.required">le sexe est obligatoire</div>
+           </div>
+        </div>
+      </div>
+
+
+
+
+
       <div class="row">
         <div class="col-md-6 form-group">
           <label for="piece">Type de Piéce</label>
-          <select class="form-control" name="piece"  formControlName="piece" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('piece').dirty || loginForm.get('piece').touched) && loginForm.get('piece').errors?.required}">
-            <option value="" disabled>Choisir Le type de piéce</option>
+          <select class="form-control" name="piece" (change)="checkNumeroPiece()" formControlName="piece" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('piece').dirty || loginForm.get('piece').touched) && loginForm.get('piece').errors?.required}">
+            <option value="" disabled>Choisir le type de piéce</option>
             <option *ngFor="let pe of tabPiece" value="{{pe.value}}">{{ pe.name }}</option>
         </select>
         <div *ngIf="loginForm.get('piece').errors" class="invalid-feedback">
@@ -100,18 +129,20 @@
         <div class="col-md-6 form-group">
           <label for="numeropiece">Numero Piéce</label>
           <div class="input-group">
-            <input id="numeropiece" name="numeropiece" class="form-control" formControlName="numeropiece" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('numeropiece').dirty || loginForm.get('numeropiece').touched) && loginForm.get('numeropiece').errors?.required}">
+            <input id="numeropiece" (blur)="checkNumeroPiece()" name="numeropiece" class="form-control" formControlName="numeropiece" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('numeropiece').dirty || loginForm.get('numeropiece').touched) && loginForm.get('numeropiece').errors?.required}">
             <div *ngIf="loginForm.get('numeropiece').errors" class="invalid-feedback">
               <div *ngIf="(submitted || loginForm.get('numeropiece').dirty || loginForm.get('numeropiece').touched) && loginForm.get('numeropiece').errors?.required">le numéro de piéce est obligatoire</div>
             </div>
+            <div class="pieceError" *ngIf="numeroPieceError!=''"> {{numeroPieceError}} </div>
           </div>
         </div>
       </div>
 
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-md-6 form-group">
           <label for="paysNais">Pays de Naissance</label>
           <select class="form-control" name="paysNais"  formControlName="paysNais" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('paysNais').dirty || loginForm.get('paysNais').touched) && loginForm.get('paysNais').errors?.required}">
+            <option value="" disabled>Choisir le pays de naissance</option>
             <option *ngFor="let pn of tabNais" value="{{pn.value}}">{{ pn.name }}</option>
         </select>
         <div *ngIf="loginForm.get('paysNais').errors" class="invalid-feedback">
@@ -121,31 +152,42 @@
         <div class="col-md-6 form-group">
           <label for="sexe">Sexe</label>
           <select class="form-control" name="sexe"  formControlName="sexe" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('sexe').dirty || loginForm.get('sexe').touched) && loginForm.get('sexe').errors?.required}">
+            <option value="" disabled>Choisir le sexe</option>
             <option *ngFor="let ps of tabSexe" value="{{ps.value}}">{{ ps.name }}</option>
-        </select>
-        <div *ngIf="loginForm.get('sexe').errors" class="invalid-feedback">
-          <div *ngIf="(submitted || loginForm.get('sexe').dirty || loginForm.get('sexe').touched) && loginForm.get('sexe').errors?.required">le sexe est obligatoire</div>
+          </select>
+           <div *ngIf="loginForm.get('sexe').errors" class="invalid-feedback">
+             <div *ngIf="(submitted || loginForm.get('sexe').dirty || loginForm.get('sexe').touched) && loginForm.get('sexe').errors?.required">le sexe est obligatoire</div>
+           </div>
         </div>
-        </div>
-      </div>
+      </div> -->
 
       <div class="row">
-        <div class="col-md-6 form-group">
+        <!-- <div class="col-md-6 form-group">
           <label for="datenais">Date de Naissance</label>
           <div class="input-group">
-            <input type="date" id="datenais" name="datenais" class="form-control" formControlName="datenais" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('datenais').dirty || loginForm.get('datenais').touched) && loginForm.get('datenais').errors.required}">
+            <input type="date" id="datenais" name="datenais" class="form-control" formControlName="datenais" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('datenais').dirty || loginForm.get('datenais').touched) && loginForm.get('datenais').errors?.required}">
             <div *ngIf="loginForm.get('datenais').errors" class="invalid-feedback">
-              <div *ngIf="(submitted || loginForm.get('datenais').dirty || loginForm.get('datenais').touched) && loginForm.get('datenais').errors.required">la date de naissance est obligatoire</div>
+              <div *ngIf="(submitted || loginForm.get('datenais').dirty || loginForm.get('datenais').touched) && loginForm.get('datenais').errors?.required">la date de naissance est obligatoire</div>
             </div>
           </div>
+        </div> -->
+        <div class="col-md-6 form-group">
+          <label for="paysNais">Pays de Naissance</label>
+          <select class="form-control" name="paysNais"  formControlName="paysNais" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('paysNais').dirty || loginForm.get('paysNais').touched) && loginForm.get('paysNais').errors?.required}">
+            <option value="" disabled>Choisir le pays de naissance</option>
+            <option *ngFor="let pn of tabNais" value="{{pn.value}}">{{ pn.name }}</option>
+        </select>
+        <div *ngIf="loginForm.get('paysNais').errors" class="invalid-feedback">
+          <div *ngIf="(submitted || loginForm.get('paysNais').dirty || loginForm.get('paysNais').touched) && loginForm.get('paysNais').errors?.required">le pays de naissance est obligatoire</div>
+        </div>
         </div>
         <div class="col-md-6 form-group">
           <label for="adresse">Adresse</label>
           <div class="input-group">
-            <input id="adresse" name="adresse" class="form-control" formControlName="adresse" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('adresse').dirty || loginForm.get('adresse').touched) && loginForm.get('adresse').errors.required}">
-            <div *ngIf="loginForm.get('adresse').errors" class="invalid-feedback">
-              <div *ngIf="(submitted || loginForm.get('adresse').dirty || loginForm.get('adresse').touched) && loginForm.get('adresse').errors.required">la date de naissance est obligatoire</div>
-            </div>
+            <input id="adresse" name="adresse" class="form-control" formControlName="adresse" [ngClass]="{ 'is-invalid': (submitted || loginForm.get('adresse').dirty || loginForm.get('adresse').touched) && loginForm.get('adresse').errors?.required}">
+             <div *ngIf="loginForm.get('adresse').errors" class="invalid-feedback">
+                <div *ngIf="(submitted || loginForm.get('adresse').dirty || loginForm.get('adresse').touched) && loginForm.get('adresse').errors?.required">l'adresse est obligatoire</div>
+              </div>
           </div>
         </div>
       </div>

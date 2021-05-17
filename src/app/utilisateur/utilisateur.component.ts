@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-utilisateur',
   templateUrl: './utilisateur.component.html',
-  styleUrls: ['./utilisateur.component.css']
+  styleUrls: ['./utilisateur.component.scss']
 })
 export class UtilisateurComponent implements OnInit {
   utilisateurs : Utilisateur[];
@@ -16,6 +16,15 @@ export class UtilisateurComponent implements OnInit {
   currentIndex:any;
   closeResult: string;
   submitted = false;
+  emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  phoneRegExp = /^(221|00221|\+221)?(77|78|75|70|76|33)[0-9]{7}$/mg;
+
+  // phoneRegExp = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+
+  // prenomRegExp = /^(([A-Za-z]+[\-\']?)*([A-Za-z]+)?\s)+([A-Za-z]+[\-\']?)*([A-Za-z]+)?$/;
+
+numeroPieceError="";
 
   tabPiece = [
     {
@@ -35,11 +44,11 @@ export class UtilisateurComponent implements OnInit {
   tabSexe = [
     {
       "name":"Masculin",
-      "value":"Masculin"
+      "value":"M"
     },
     {
       "name":"Féminin",
-      "value":"Féminin"
+      "value":"F"
     }
   ]
 
@@ -64,18 +73,107 @@ export class UtilisateurComponent implements OnInit {
 
   constructor(private restapi:RestApiService, private modalService:NgbModal,private fb: FormBuilder) { }
 
+
   ngOnInit(): void {
     this.utilisateurs = this.restapi.getUtilisateurs();
     this.initForm();
+    // console.log("d",this.loginForm.get("sexe").value);
+  }
+
+
+  checkNumeroPiece(){
+     if(this.loginForm.get("sexe").value != '' && this.loginForm.get("piece").value != '' && this.loginForm.get("numeropiece").value != ''){
+     let valNumeroPice= (this.loginForm.get("numeropiece").value).toString();
+     let valPice= this.loginForm.get("piece").value;
+     this.numeroPieceError="";
+
+     //  Pour CNI
+     if(valPice == "CNI" ){
+       if((valNumeroPice.length == 14 || valNumeroPice.length == 13)){
+          if(this.loginForm.get("sexe").value == "M"){
+           let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
+            if(a != "1"){
+              this.numeroPieceError="Le numéro de pièce doit commencer par 1 pour un homme";
+            }else{
+              this.numeroPieceError="";
+            }
+          } else if(this.loginForm.get("sexe").value == "F"){
+            let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
+            if(a != "2"){
+              this.numeroPieceError="Le numéro de pièce doit commencer par 2 pour une femme";
+            }else{
+              this.numeroPieceError="";
+            }
+          }
+
+       }else{
+        this.numeroPieceError="Le numéro de pièce doit contenir 13 ou 14 caractères pour le CNI";
+       }
+    }
+
+      //  Pour CEDEAO
+
+    else if(valPice == "CEDEAO")  {
+    if(valNumeroPice.length == 17){
+        if(this.loginForm.get("sexe").value == "M"){
+         let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
+          if(a != "1"){
+            this.numeroPieceError="Le numéro de pièce doit commencer par 1 pour un homme";
+          }else{
+            this.numeroPieceError="";
+          }
+        }else if(this.loginForm.get("sexe").value == "F"){
+          let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
+          if(a != "2"){
+            this.numeroPieceError="Le numéro de pièce doit commencer par 2 pour une femme";
+          }else{
+            this.numeroPieceError="";
+          }
+        }
+
+     }else{
+      this.numeroPieceError="Le numéro de pièce doit contenir 17 caractères pour la CEDEAO";
+     }
+    }
+     //  Pour Passport
+
+     else {
+      if(valNumeroPice.length == 8){
+        if(this.loginForm.get("sexe").value == "M"){
+        let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
+          if(a != "1"){
+            this.numeroPieceError="Le numéro de pièce doit commencer par 1 pour un homme";
+          }else{
+            this.numeroPieceError="";
+          }
+        }else if(this.loginForm.get("sexe").value == "F"){
+          let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
+          if(a != "2"){
+            this.numeroPieceError="Le numéro de pièce doit commencer par 2 pour une femme";
+          }else{
+            this.numeroPieceError="";
+          }
+        }
+
+      }else{
+        this.numeroPieceError="Le numéro de pièce doit contenir 8 caractères pour le passport";
+      }
+     }
+    }
+
+
+     console.log("error",this.numeroPieceError);
+
   }
 
   initForm(content?){
     this.isUpdate=false;
+    this.submitted = false;
     this.loginForm = this.fb.group({
-      nom: ['', Validators.required],
+      nom: ['', [Validators.required]],
       prenom: ['', Validators.required],
-      telephone: ['', Validators.required],
-      email: ['', Validators.required],
+      telephone: ['', [Validators.required, Validators.pattern(this.phoneRegExp)]],
+      email: ['',[Validators.required, Validators.pattern(this.emailPattern)]],
       piece: ['', Validators.required],
       numeropiece: ['', Validators.required],
       sexe: ['', Validators.required],
@@ -86,14 +184,18 @@ export class UtilisateurComponent implements OnInit {
     if(content){
       this.open(content);
     }
+
+
+
+
   }
 
   updateForm(val, index, content){
     this.loginForm = this.fb.group({
       nom: [val.nom, Validators.required],
       prenom: [val.prenom, Validators.required],
-      telephone: [val.telephone, Validators.required],
-      email: [val.email, Validators.required],
+      telephone: [val.telephone, [Validators.required, Validators.pattern(this.phoneRegExp)]],
+      email: [val.email,[Validators.required, Validators.pattern(this.emailPattern)]],
       piece: [val.piece, Validators.required],
       numeropiece: [val.numeropiece, Validators.required],
       sexe: [val.sexe, Validators.required],
@@ -101,7 +203,7 @@ export class UtilisateurComponent implements OnInit {
       adresse: [val.adresse, Validators.required],
       datenais: [val.datenais, Validators.required],
     });
-
+    this.submitted = false;
     this.isUpdate=true;
     this.currentIndex=index;
     this.open(content);
@@ -113,23 +215,53 @@ export class UtilisateurComponent implements OnInit {
       return;
   }
     if(!this.isUpdate){
-    this.restapi.addUtilisateurs(this.loginForm.value)
+
+
+
+
+    Swal.fire({
+      title: 'Êtes-vous sûr(e)?',
+      text: "De bien vouloir Ajouter cette utilisateur!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, Ajouter!',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.restapi.addUtilisateurs(this.loginForm.value);
+        Swal.fire(
+          'Ajouter!',
+          'l\'utilisateur a été Ajouter avec succés.',
+          'success'
+        );
+        this.modalService.dismissAll();
+        this.utilisateurs = this.restapi.getUtilisateurs();
+      }
+    })
   } else{
-    this.restapi.updateUtilisateurs(this.loginForm.value,this.currentIndex);
-    this.initForm();
+
+    Swal.fire({
+      title: 'Êtes-vous sûr(e) de bien vouloir modifier cet utilisateur?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: `Modifier`,
+      denyButtonText: `Annuler`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.restapi.updateUtilisateurs(this.loginForm.value,this.currentIndex);
+        this.utilisateurs = this.restapi.getUtilisateurs();
+        Swal.fire('Utilisateur modifié avec succés!', '', 'success');
+        this.modalService.dismissAll();
+    this.utilisateurs = this.restapi.getUtilisateurs();
+      } else if (result.isDenied) {
+        Swal.fire("l'utilisateur n'a pas été ajouté" ,'', 'info')
+      }
+    });
   }
 
-
-  Swal.fire({
-    title: 'Hurray!!',
-    text:   this.loginForm.value.nom+" has been added successfully",
-    icon: 'success'
-  });
-
-
-    // this.ngOnInit();
-    this.modalService.dismissAll();
-    this.utilisateurs = this.restapi.getUtilisateurs();
   }
 
   get formControls(){
@@ -158,9 +290,30 @@ export class UtilisateurComponent implements OnInit {
   }
 
   deleteUtilisateur(utilisateurs: Utilisateur) {
-    if(confirm('Are you sure you want to delete this task?')) {
-      this.restapi.deleteUtilisateurs(utilisateurs);
-    }
+    // if(confirm('Are you sure you want to delete this task?')) {
+    //   this.restapi.deleteUtilisateurs(utilisateurs);
+    // }
+
+    Swal.fire({
+      title: 'Êtes-vous sûr(e)?',
+      text: "De bien vouloir supprimer cet utilisateur!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui, Supprimer!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire(
+          'Supprimer!',
+          'l\'utilisateur a été supprimé avec succés.',
+          'success'
+        );
+        this.restapi.deleteUtilisateurs(utilisateurs);
+      }
+    })
+
+
   }
 
 
@@ -180,6 +333,7 @@ export class UtilisateurComponent implements OnInit {
     document.getElementById('lsexe').setAttribute('value', utilisateurs.sexe);
     document.getElementById('lpaysNais').setAttribute('value', utilisateurs.paysNais);
     document.getElementById('ladresse').setAttribute('value', utilisateurs.adresse);
+    // document.getElementById('ladresse').setAttribute('value', utilisateurs.datenais);
  }
 
 
