@@ -2,7 +2,7 @@
 @import "~bootstrap/dist/css/bootstrap.css";
 @import "~font-awesome/css/font-awesome.css";
 .container{
-  margin-top:3%;
+  margin-top:2%;
 }
 
 .btn{
@@ -18,6 +18,8 @@
 table .btn{
   margin: 2px;
 }
+
+
 
 
 html, body { height: 100%; }

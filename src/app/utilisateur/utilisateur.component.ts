@@ -113,20 +113,19 @@ export class UtilisateurComponent implements OnInit {
   getUtilisateurs(){
      this.loadSpinner = true;
 
-    // this.restapi.getUtilisateurs().subscribe(response => {
-    //   console.log("reponse",response);
+     this.restapi.getUtilisateurs().subscribe(response => {
+      console.log("reponse",response);
 
-    //   if (response['responseCode'] === 200){
-    //      this.loadSpinner = false;
-
-    //     this.utilisateurs = response["data"];
-    //   }
-
+      if (response['responseCode'] === 200){
+        this.loadSpinner = false;
+        this.utilisateurs = response["data"];
+      }
 
 
-    // },errors=>{
-    //   this.loadSpinner = false;
-    // });
+    },errors=>{
+      this.loadSpinner = false;
+    });
+
   }
 
 
