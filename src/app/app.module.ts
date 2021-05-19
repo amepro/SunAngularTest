@@ -8,6 +8,9 @@ import { UtilisateurComponent } from './utilisateur/utilisateur.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
 import {HttpClientModule} from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 
 @NgModule({
   declarations: [
@@ -22,6 +25,9 @@ import {HttpClientModule} from '@angular/common/http';
     ReactiveFormsModule,
     DataTablesModule,
     HttpClientModule,
+    BrowserAnimationsModule,
+    MatProgressSpinnerModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { Subject } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 
@@ -92,7 +93,7 @@ export class UtilisateurComponent implements OnInit {
 
 
 
-  constructor(private restapi:RestApiService, private modalService:NgbModal,private fb: FormBuilder) { }
+  constructor(private restapi:RestApiService, private modalService:NgbModal,private fb: FormBuilder,private SpinnerService: NgxSpinnerService) { }
 
 
   ngOnInit(): void {
@@ -110,20 +111,22 @@ export class UtilisateurComponent implements OnInit {
 
 
   getUtilisateurs(){
-    this.loadSpinner = true;
-    this.restapi.getUtilisateurs().subscribe(response => {
-      console.log("reponse",response);
+     this.loadSpinner = true;
 
-      if (response['responseCode'] === 200){
-        this.loadSpinner = false;
-        this.utilisateurs = response["data"];
-      }
+    // this.restapi.getUtilisateurs().subscribe(response => {
+    //   console.log("reponse",response);
+
+    //   if (response['responseCode'] === 200){
+    //      this.loadSpinner = false;
+
+    //     this.utilisateurs = response["data"];
+    //   }
 
 
 
-    },errors=>{
-      this.loadSpinner = false;
-    });
+    // },errors=>{
+    //   this.loadSpinner = false;
+    // });
   }
 
 

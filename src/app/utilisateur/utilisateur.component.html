@@ -1,16 +1,27 @@
+
+<div class="contai">
+<div *ngIf="loadSpinner" class="spinLoad">
+  <!-- <i class="fa fa-spinner fa-pulse loadd"></i> -->
+  <div class="text-loader">
+    Chargement en cours &nbsp;<i class="fa fa-spinner fa-pulse loadd"></i>
+  </div>
+</div>
+</div>
+
 <div class="container">
+
+
+  <h1 style="text-align: center;">Liste des utilisateurs</h1>
+
   <div class="float-right">
-
-
-    <button class="btn btn btn-primary" (click)="initForm(content)" title="Ajouter" [disabled]="desactiverButton">
+    <button class="btn btn btn-primary" (click)="initForm(content)" title="Ajouter" [disabled]="desactiverButton" *ngIf="!loadSpinner">
       <i class="fa fa-plus"></i>
     </button>
 
   </div>
   <br>
   <br>
-  <table class="table table-bordered table-striped" *ngIf="utilisateurs.length!=0">
-    <!-- <table class="table table-bordered table-striped"></table> -->
+  <table class="table table-bordered table-striped" *ngIf="!loadSpinner && utilisateurs.length!=0">
     <thead>
     <tr>
       <th>Nom</th>
@@ -49,6 +60,10 @@
     </tr>
     </tbody>
   </table>
+</div>
+
+<div *ngIf="utilisateurs.length==0 && !loadSpinner">
+  Aucune donnée disponible
 </div>
 
 
