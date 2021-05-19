@@ -20,7 +20,7 @@ export class UtilisateurComponent implements OnInit {
 
 
   // dtTrigger: Subject<any> = new Subject();
-
+  loadSpinner: boolean = false;
   desactiverButton = false;
 
   currentUser:any;
@@ -110,13 +110,19 @@ export class UtilisateurComponent implements OnInit {
 
 
   getUtilisateurs(){
-    this.restapi.getUtilisateurs().subscribe((data: any) => {
-      console.log(data);
+    this.loadSpinner = true;
+    this.restapi.getUtilisateurs().subscribe(response => {
+      console.log("reponse",response);
 
-      this.utilisateurs = data.data;
-      // this.dtTrigger.next();
-      // console.log("utilisteurs",this.utilisateurs);
+      if (response['responseCode'] === 200){
+        this.loadSpinner = false;
+        this.utilisateurs = response["data"];
+      }
 
+
+
+    },errors=>{
+      this.loadSpinner = false;
     });
   }
 
