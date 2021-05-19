@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UtilisateurComponent } from './utilisateur/utilisateur.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DataTablesModule } from 'angular-datatables';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     AppRoutingModule,
     NgbModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DataTablesModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

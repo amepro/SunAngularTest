@@ -1,103 +1,146 @@
 import { RestApiService } from './../service/rest-api.service';
-import { Utilisateur } from './../model/utilisateur.model';
+import { Utilisateurs } from './../model/utilisateur.model';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { Subject } from 'rxjs';
+
+
+
+
 @Component({
   selector: 'app-utilisateur',
   templateUrl: './utilisateur.component.html',
   styleUrls: ['./utilisateur.component.scss']
 })
 export class UtilisateurComponent implements OnInit {
-  utilisateurs : Utilisateur[];
+
+  dtOptions: any = {};
+
+
+  // dtTrigger: Subject<any> = new Subject();
+
+  desactiverButton = false;
+
+  currentUser:any;
+
+  btnAjoutSpinner=false
+
+
+  utilisateurs : Utilisateurs[];
+
   loginForm:FormGroup;
   isUpdate:boolean=false;
   currentIndex:any;
+  currentIndex2:any;
   closeResult: string;
   submitted = false;
   emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   phoneRegExp = /^(221|00221|\+221)?(77|78|75|70|76|33)[0-9]{7}$/mg;
 
-  // phoneRegExp = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 
-  // prenomRegExp = /^(([A-Za-z]+[\-\']?)*([A-Za-z]+)?\s)+([A-Za-z]+[\-\']?)*([A-Za-z]+)?$/;
+  numeroPieceError="";
 
-numeroPieceError="";
+
 
   tabPiece = [
     {
-      "name":"CNI",
-      "value":"CNI"
+      "name":"cni",
+      "value":"cni"
     },
     {
-      "name":"CEDEAO",
-      "value":"CEDEAO"
+      "name":"cedeao",
+      "value":"cedeao"
     },
     {
-      "name":"PASSPORT",
-      "value":"PASSPORT"
+      "name":"passport",
+      "value":"passport"
     }
   ]
 
   tabSexe = [
     {
-      "name":"Masculin",
-      "value":"M"
+      "name":"masculin",
+      "value":"masculin"
     },
     {
-      "name":"Féminin",
-      "value":"F"
+      "name":"feminin",
+      "value":"feminin"
     }
   ]
 
   tabNais = [
     {
-      "name":"SENEGAL",
-      "value":"SENEGAL"
+      "name":"senegal",
+      "value":"senegal"
     },
     {
-      "name":"GUINEE",
-      "value":"GUINEE"
+      "name":"guinee",
+      "value":"guinee"
     },
     {
-      "name":"MALI",
-      "value":"MALI"
+      "name":"mali",
+      "value":"mali"
     },
     {
-      "name":"TOGO",
-      "value":"TOGO"
+      "name":"togo",
+      "value":"togo"
     }
   ]
+
+
 
   constructor(private restapi:RestApiService, private modalService:NgbModal,private fb: FormBuilder) { }
 
 
   ngOnInit(): void {
-    this.utilisateurs = this.restapi.getUtilisateurs();
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 5,
+      processing: true,
+      language:{url:"//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"},
+    };
+    // this.utilisateurs = this.restapi.getUtilisateurs();
     this.initForm();
-    // console.log("d",this.loginForm.get("sexe").value);
+    this.getUtilisateurs();
+
   }
+
+
+  getUtilisateurs(){
+    this.restapi.getUtilisateurs().subscribe((data: any) => {
+      console.log(data);
+
+      this.utilisateurs = data.data;
+      // this.dtTrigger.next();
+      // console.log("utilisteurs",this.utilisateurs);
+
+    });
+  }
+
 
 
   checkNumeroPiece(){
      if(this.loginForm.get("sexe").value != '' && this.loginForm.get("piece").value != '' && this.loginForm.get("numeropiece").value != ''){
-     let valNumeroPice= (this.loginForm.get("numeropiece").value).toString();
-     let valPice= this.loginForm.get("piece").value;
+     let valNumeroPiece= (this.loginForm.get("numeropiece").value).toString();
+     let valPiece= this.loginForm.get("piece").value;
+     let valSexe = this.loginForm.get("sexe").value;
+
      this.numeroPieceError="";
 
      //  Pour CNI
-     if(valPice == "CNI" ){
-       if((valNumeroPice.length == 14 || valNumeroPice.length == 13)){
-          if(this.loginForm.get("sexe").value == "M"){
+     if(valPiece == "CNI" ){
+       if((valNumeroPiece.length == 14 || valNumeroPiece.length == 13)){
+          if(valSexe == "M"){
            let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
             if(a != "1"){
               this.numeroPieceError="Le numéro de pièce doit commencer par 1 pour un homme";
             }else{
               this.numeroPieceError="";
             }
-          } else if(this.loginForm.get("sexe").value == "F"){
+          } else if(valSexe == "F"){
             let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
             if(a != "2"){
               this.numeroPieceError="Le numéro de pièce doit commencer par 2 pour une femme";
@@ -113,16 +156,16 @@ numeroPieceError="";
 
       //  Pour CEDEAO
 
-    else if(valPice == "CEDEAO")  {
-    if(valNumeroPice.length == 17){
-        if(this.loginForm.get("sexe").value == "M"){
+    else if(valPiece == "CEDEAO")  {
+    if(valNumeroPiece.length == 17){
+        if(valSexe == "M"){
          let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
           if(a != "1"){
             this.numeroPieceError="Le numéro de pièce doit commencer par 1 pour un homme";
           }else{
             this.numeroPieceError="";
           }
-        }else if(this.loginForm.get("sexe").value == "F"){
+        }else if(valSexe == "F"){
           let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
           if(a != "2"){
             this.numeroPieceError="Le numéro de pièce doit commencer par 2 pour une femme";
@@ -138,15 +181,15 @@ numeroPieceError="";
      //  Pour Passport
 
      else {
-      if(valNumeroPice.length == 8){
-        if(this.loginForm.get("sexe").value == "M"){
+      if(valNumeroPiece.length == 8){
+        if(valSexe == "M"){
         let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
           if(a != "1"){
             this.numeroPieceError="Le numéro de pièce doit commencer par 1 pour un homme";
           }else{
             this.numeroPieceError="";
           }
-        }else if(this.loginForm.get("sexe").value == "F"){
+        }else if(valSexe == "F"){
           let a= (this.loginForm.get("numeropiece").value).toString().charAt(0)
           if(a != "2"){
             this.numeroPieceError="Le numéro de pièce doit commencer par 2 pour une femme";
@@ -185,13 +228,11 @@ numeroPieceError="";
       this.open(content);
     }
 
-
-
-
   }
 
   updateForm(val, index, content){
     this.loginForm = this.fb.group({
+      id:[val.id],
       nom: [val.nom, Validators.required],
       prenom: [val.prenom, Validators.required],
       telephone: [val.telephone, [Validators.required, Validators.pattern(this.phoneRegExp)]],
@@ -210,56 +251,109 @@ numeroPieceError="";
   }
 
   onSubmit(){
+
     this.submitted = true;
     if (this.loginForm.invalid) {
       return;
   }
     if(!this.isUpdate){
 
-
-
-
     Swal.fire({
       title: 'Êtes-vous sûr(e)?',
-      text: "De bien vouloir Ajouter cette utilisateur!",
-      icon: 'warning',
+      text: "De bien vouloir ajouter cet utilisateur!",
+      icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui, Ajouter!',
+      confirmButtonText: 'Confirmer',
       cancelButtonText: 'Annuler'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.restapi.addUtilisateurs(this.loginForm.value);
-        Swal.fire(
-          'Ajouter!',
-          'l\'utilisateur a été Ajouter avec succés.',
-          'success'
-        );
-        this.modalService.dismissAll();
-        this.utilisateurs = this.restapi.getUtilisateurs();
+        this.btnAjoutSpinner=true;
+        this.desactiverButton = true;
+        this.restapi.addUtilisateurs(this.loginForm.value).subscribe(response=>{
+          // console.log("Reponse",response);
+
+          if (response['responseCode'] === 200){
+            this.desactiverButton = false;
+            this.btnAjoutSpinner=false;
+            Swal.fire(
+              'Ajouter!',
+              'l\'utilisateur a été ajouter avec succés.',
+              'success'
+            );
+            this.utilisateurs.unshift(response["data"]);
+            this.modalService.dismissAll();
+          }else{
+            this.desactiverButton = false;
+            this.btnAjoutSpinner=false;
+            Swal.fire(
+              'Ajouter!',
+              response["message"],
+              'error'
+            );
+          }
+        },errors=>{
+          this.desactiverButton = false;
+          this.btnAjoutSpinner=false;
+          Swal.fire(
+            'Ajouter!',
+            errors.error.errors[0].message,
+            'error'
+          );
+        });
+
       }
     })
-  } else{
+  }
+    else{
 
     Swal.fire({
-      title: 'Êtes-vous sûr(e) de bien vouloir modifier cet utilisateur?',
-      showDenyButton: true,
+      title: 'Êtes-vous sûr(e)?',
+      text: "De bien vouloir modifier cet utilisateur!",
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonText: `Modifier`,
-      denyButtonText: `Annuler`,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmer',
+      cancelButtonText: 'Annuler',
     }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        this.restapi.updateUtilisateurs(this.loginForm.value,this.currentIndex);
-        this.utilisateurs = this.restapi.getUtilisateurs();
-        Swal.fire('Utilisateur modifié avec succés!', '', 'success');
-        this.modalService.dismissAll();
-    this.utilisateurs = this.restapi.getUtilisateurs();
-      } else if (result.isDenied) {
-        Swal.fire("l'utilisateur n'a pas été ajouté" ,'', 'info')
+        this.btnAjoutSpinner=true;
+        this.desactiverButton = true;
+        this.restapi.updateUtilisateurs(this.loginForm.value).subscribe(response=>{
+          if (response['responseCode'] === 200){
+            this.desactiverButton = false;
+            this.btnAjoutSpinner=false;
+            Swal.fire(
+              'Modifier!',
+              'l\'utilisateur a été modifier avec succés.',
+              'success'
+            );
+
+             this.utilisateurs[this.currentIndex]=response["data"]
+
+            this.modalService.dismissAll();
+          }else{
+            this.desactiverButton = false;
+            this.btnAjoutSpinner=false;
+            Swal.fire(
+              'Modifier!',
+              'l\'utilisateur n\'a pas été modifier.',
+              'error'
+            );
+          }
+        },errors=>{
+          this.desactiverButton = false;
+          this.btnAjoutSpinner=false;
+          Swal.fire(
+            'Modifier !',
+            errors.error.errors[0].message,
+            'error'
+          );
+        });
       }
-    });
+    })
   }
 
   }
@@ -268,6 +362,49 @@ numeroPieceError="";
     return this.loginForm.controls;
   }
 
+
+
+
+
+  deleteUtilisateur(id,index) {
+    Swal.fire({
+      title: 'Êtes-vous sûr(e)?',
+      text: "De bien vouloir supprimer cet utilisateur!",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmer!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.currentIndex2=index;
+        this.desactiverButton=true;
+        this.btnAjoutSpinner=true;
+        this.restapi.deleteUtilisateurs(id).subscribe(
+          response=>{
+            this.desactiverButton = false;
+            this.btnAjoutSpinner=false;
+            Swal.fire(
+              'Supprimer!',
+              'l\'utilisateur a été supprimé avec succés.',
+              'success'
+            );
+            this.utilisateurs.splice(index,1);
+            this.currentIndex2=-1
+          },errors=>{
+            this.desactiverButton = false;
+            this.btnAjoutSpinner=false;
+            Swal.fire(
+              'Suppression!',
+              errors.error.errors[0].message,
+              'error'
+            );
+             this.currentIndex2=-1
+          }
+        );
+      }
+    })
+  }
 
   open(content) {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true,
@@ -279,6 +416,7 @@ numeroPieceError="";
     });
   }
 
+
   private getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
@@ -289,36 +427,7 @@ numeroPieceError="";
     }
   }
 
-  deleteUtilisateur(utilisateurs: Utilisateur) {
-    // if(confirm('Are you sure you want to delete this task?')) {
-    //   this.restapi.deleteUtilisateurs(utilisateurs);
-    // }
-
-    Swal.fire({
-      title: 'Êtes-vous sûr(e)?',
-      text: "De bien vouloir supprimer cet utilisateur!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Oui, Supprimer!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire(
-          'Supprimer!',
-          'l\'utilisateur a été supprimé avec succés.',
-          'success'
-        );
-        this.restapi.deleteUtilisateurs(utilisateurs);
-      }
-    })
-
-
-  }
-
-
-
-  openDetails(targetModal, utilisateurs: Utilisateur) {
+  openDetails(targetModal, utilisateurs: Utilisateurs) {
     this.modalService.open(targetModal, {
      centered: true,
      backdrop: 'static',
