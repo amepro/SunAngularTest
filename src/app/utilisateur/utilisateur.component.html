@@ -1,121 +1,69 @@
+
 <div class="container">
-  <div class="row">
-    <div class="col-sm">
-      <a routerLink="/utilisatueur"
-         role="button"
-         class="btn btn-outline-primary btn-lg btn-block text-center active">
-        <span><i class="fa fa-users"></i></span>
-        <br>
-        <p class="textB">Liste des utilisateurs</p>
-      </a>
-    </div>
-    <div class="col-sm">
-      <a href=""
-         role="button"
-         class="btn btn-outline-primary btn-lg btn-block text-center">
-        <span><i class="fa fa-users"></i></span>
-        <br>
-        <p class="textB"> Button 2</p>
-      </a>
-    </div>
-    <div class="col-sm">
-      <a href=""
-         role="button"
-         class="btn btn-outline-primary btn-lg btn-block text-center">
-        <span><i class="fa fa-users"></i></span>
-        <br>
-        <p class="textB"> Button 3</p>
-      </a>
-    </div>
-    <div class="col-sm">
-      <a href=""
-         role="button"
-         class="btn btn-outline-primary btn-lg btn-block text-center">
-        <span><i class="fa fa-users"></i></span>
-        <br>
-        <p class="textB"> Button 4</p>
-      </a>
-    </div>
-  </div>
-</div>
+  <div class="table-wrapper">
+      <div class="table-title">
+          <div class="row">
+              <div class="col-sm-6">
+                  <h2>Liste <b>des utilisateurs</b></h2>
+              </div>
+              <div class="col-sm-6">
 
-
-
-<!-- <div class="contai">
-<div *ngIf="loadSpinner" class="spinLoad">
-  <div class="text-loader">
-    <i class="fa fa-spinner fa-pulse fa-3x loadd"></i><br>
-   <h2>Chargement en cours</h2>
-  </div>
-</div>
-</div> -->
-
-<!-- <div class="card" style="width: 28rem;">
-  <div class="card-body">
-
-  </div>
-</div> -->
-<br>
-<div class="card container">
-<div class="">
-  <!-- <h1 style="text-align: center;">Liste des utilisateurs</h1> -->
-
-    <!-- <div class="card-body"> -->
-
-      <div class="contai">
-        <div *ngIf="loadSpinner" class="spinLoad">
-          <div class="text-loader">
-            <i class="fa fa-spinner fa-pulse fa-3x loadd"></i><br>
-           <h2>Chargement en cours</h2>
+                    <button class="btn btn btn-success" (click)="initForm(content)" title="Ajouter" >
+                      <i class="material-icons">&#xE147;</i>
+                    </button>
+              </div>
           </div>
-        </div>
-        </div>
+      </div>
 
-        <div class="float-right" style="margin-top: -22px;">
-          <button class="btn btn btn-primary" (click)="initForm(content)" title="Ajouter" [disabled]="desactiverButton" *ngIf="!loadSpinner">
-            <i class="fa fa-plus"></i>
-          </button>
-        </div>
-        <br>
-        <br>
-        <table style="padding-top: 12px;" class="table table-bordered table-striped" *ngIf="!loadSpinner && utilisateurs.length!=0">
-          <thead>
-          <tr>
-            <th>Nom</th>
-            <th>Prénom</th>
-            <th>Téléphone</th>
-            <th>Email</th>
-            <th>Actions</th>
-          </tr>
+      <div class="table-responsive">
+
+            <!-- loader  -->
+                 <div class="contai">
+                    <div *ngIf="loadSpinner" class="spinLoad">
+                      <div class="text-loader">
+                        <i class="fa fa-spinner fa-pulse fa-3x loadd"></i><br>
+                      <h2>Chargement en cours</h2>
+                      </div>
+                    </div>
+                 </div>
+                 <!-- loader -->
+
+      <table class="table project-table table-hover table-nowrap" *ngIf="!loadSpinner && utilisateurs.length!=0">
+          <thead class="thead-light">
+              <tr>
+                  <th>Nom</th>
+                  <th>Prénom</th>
+                  <th>Téléphone</th>
+                  <th>Email</th>
+                  <th>Actions</th>
+              </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let ut of utilisateurs; let i=index">
-            <td><span>{{ut.nom}}</span></td>
-            <td><span>{{ut.prenom}}</span></td>
-            <td><span>{{ut.telephone}}</span></td>
-            <td><span>{{ut.email}}</span></td>
-            <td>
-              <button class="btn btn-sm btn-info" title="Détail" [disabled]="desactiverButton">
-                <i class="fa fa-eye" ></i></button>
-                <button class="btn btn-sm btn-warning" (click)="updateForm(ut,i,content)" title="Modifier" [disabled]="desactiverButton">
-                  <i class="fa fa-edit"></i></button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteUtilisateur(ut.id,i)" title="Supprimer" [disabled]="desactiverButton">
-                    <i class="fa fa-remove"></i></button>
+              <tr *ngFor="let ut of utilisateurs; let i=index">
+                <td><span>{{ut.nom}}</span></td>
+                <td><span>{{ut.prenom}}</span></td>
+                <td><span>{{ut.telephone}}</span></td>
+                <td><span>{{ut.email}}</span></td>
+                <td class="alignbtn">
+                    <button class="edit" (click)="updateForm(ut,i,content)" title="Modifier" [disabled]="desactiverButton">
+                      <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                    </button>
 
-                    <button class="btn btn-sm btn-primary" *ngIf="currentIndex2==i">
-                    <i class="fa fa-spinner fa-pulse mySpin"></i>
-                  </button>
-            </td>
-          </tr>
+                    <button class="delete" title="Supprimer" (click)="deleteUtilisateur(ut.id,i)" [disabled]="desactiverButton">
+                      <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                    </button>
+
+                    <button class="loaderr" *ngIf="currentIndex2==i">
+                      <i class="fa fa-spinner fa-pulse"></i>
+                    </button>
+                </td>
+            </tr>
           </tbody>
-        </table>
-      </div>
-</div>
+      </table>
+    </div>
 
-<div *ngIf="utilisateurs.length==0 && !loadSpinner">
-  Aucune donnée disponible
+  </div>
 </div>
-
 
 
 
@@ -255,99 +203,3 @@
     </form>
   </div>
 </ng-template>
-
-
-
-<!-- Détail -->
-
-
-<!-- <ng-template #contentDetails let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title1">Details</h4>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <form>
-      <div class="row">
-        <div class="col-md-6 form-group">
-          <label for="lnom">Nom</label>
-          <div class="input-group">
-            <input id="lnom" class="form-control" readonly>
-          </div>
-        </div>
-        <div class="col-md-6  form-group">
-          <label for="prenom">Prénom</label>
-          <div class="input-group">
-            <input id="lprenom" class="form-control" readonly>
-          </div>
-        </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 form-group">
-        <label for="telephone">Téléphone</label>
-        <div class="input-group">
-          <input id="ltelephone" class="form-control" readonly>
-        </div>
-      </div>
-      <div class="col-md-6  form-group">
-        <label for="email">Email</label>
-        <div class="input-group">
-          <input id="lemail" class="form-control" readonly>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 form-group">
-        <label for="piece">Type de piéce</label>
-        <div class="input-group">
-          <input id="lpiece" class="form-control" readonly>
-        </div>
-      </div>
-      <div class="col-md-6  form-group">
-        <label for="numeropiece">Numero de piece</label>
-        <div class="input-group">
-          <input id="lnumeropiece" class="form-control" readonly>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 form-group">
-        <label for="paysNais">Pays de naissance</label>
-        <div class="input-group">
-          <input id="lpaysNais" class="form-control" readonly>
-        </div>
-      </div>
-      <div class="col-md-6  form-group">
-        <label for="sexe">Sexe</label>
-        <div class="input-group">
-          <input id="lsexe" class="form-control" readonly>
-        </div>
-      </div>
-    </div>
-
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Fermer</button>
-  </div>
-</ng-template> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
